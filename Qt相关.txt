@@ -1,0 +1,16 @@
+槽函数的返回值必须和信号函数相同。
+槽函数的参数个数只能比信号函数少。
+槽函数的参数不能有默认值。
+
+编码问题选择带有BOM的UTF-8编码
+出现乱码加上这句#pragma execution_character_set("utf-8")
+出现乱码在头文件加入：
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+# pragma execution_character_set("utf-8")
+#endif
+
+创建一个txt，内容为
+D:\CPP\Qt\5.9.9\msvc2015_64\bin\windeployqt.exe name.exe
+
+pause
+然后另存为bat文件（效果就和windeployqt一样生成依赖的dll文件）

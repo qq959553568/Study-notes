@@ -1,0 +1,9 @@
+问题：简单的hello world无法运行，提示缺少opencv_world420d
+解决：在项目——属性——依赖项——取消opencv的依赖即可（两年前的毕业设计用到opencv，没想到在这里给我，埋了坑）
+a-97，A-65
+！非    &&与     ||或
+struct 默认权限是public
+class 默认权限是private
+char、short都是2个字节，int、float是4个字节，long、double是8个字节
+一个字节等于8位
+浅拷贝带来的问题就是堆区的内存重复释放

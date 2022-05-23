@@ -1,0 +1,83 @@
+QT使用一系列绑定工具辅助生成代码。如：moc(Meta-Object Compiler)用于元对象代码生成，适用于*.h,*.cpp文件，uic(User Interface Compiler)用于Widget布局生成,适用于*.ui文件，rcc(Resource Compiler)用于虚拟文件系统内容生成， 适用于*.qrc文件。当使用QT官方IDE（QT Creator）构建项目时，IDE会自动调用这些工具。
+
+当使用CMake生成QT工程时，所需做的事情就是告诉CMake哪些文件需要用使用Qt 辅助工具进行生成。
+
+方法一：
+全局控制：（该方法 从CMake全局入手控制文件生成，最多只需三句话）
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+
+set(project_name TestWindow)
+
+project(${project_name})
+
+#打开全局moc
+set(CMAKE_AUTOMOC ON)
+#打开全局uic
+set(CMAKE_AUTOUIC ON)
+#打开全局rcc，本示例中没有使用qrc，此句可以去掉
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt5 REQUIRED Widgets)
+
+set(target_name mainwindow)
+add_executable(${target_name} main.cpp mainwindow.cpp mainwindow.h mainwindow.ui)
+target_link_libraries(${target_name} Qt5::Widgets)
+
+方法二：
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+
+set(project_name TestWindow)
+
+project(${project_name})
+
+find_package(Qt5 REQUIRED Widgets)
+
+set(target_name mainwindow)
+add_executable(${target_name} main.cpp mainwindow.cpp mainwindow.h mainwindow.ui)
+target_link_libraries(${target_name} Qt5::Widgets)
+
+#设置目标关联的*.h, *.cpp 使用 Qt moc进行编译 
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON)
+#设置目标关联的*.ui 使用 Qt uic进行编译
+set_target_properties(${target_name} PROPERTIES AUTOUIC ON)
+
+#跳过不需要使用moc编译的文件。如果觉得麻烦此句可以不写，automoc能根据*.h,*.cpp代码里面的宏(Q_OBJECT;Q_GADGET;Q_NAMESPACE)自动判断是否需要使用moc
+set_source_files_properties(main.cpp PROPERTIES SKIP_AUTOMOC ON)
+
+使用该方法，从目标（可执行或者库）入手控制文件生成，可控力度更细一些。
+
+
+上述两种方法：
+
+使用CMake官方Auto方法生成的VS工程，主要会修改三个地方：
+  1）会将一个mocs_compilation.cpp添加到工程里面
+  2）【附件包含路径】中会添加一句TestWindow_autogen\include_xxx
+  3）【预先生成事件】中会添加预处理命令，源文件修改后会自动重新生成moc_xxx.cpp文件
+
+方法三：单个文件控制
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+
+set(project_name TestWindow)
+
+project(${project_name})
+
+set(target_name mainWindow)
+
+find_package(Qt5 REQUIRED Widgets)
+
+#包含当前路径，使用*.ui文件时，需要加上这句，否则找不到头文件
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+#需要生成的moc文件，输出文件名称放在变量 mocfiles中，必须在find QT5 package才能调用
+qt5_wrap_cpp(mocfiles mainwindow.h)
+source_group("moc" FILES ${mocfiles})
+
+#需要生成的ui文件，必须在find QT5 package才能调用
+qt5_wrap_ui(uifiles mainwindow.ui)
+
+#添加生成的moc文件到目标中
+add_executable(${target_name} main.cpp mainwindow.cpp mainwindow.h mainwindow.ui ${mocfiles})
+target_link_libraries(${target_name} Qt5::Widgets)
+该方法从 源文件 入手控制文件生成，要稍微麻烦一些。
+
+   CMake生成VS工程后，将mainwindow.ui的预处理命令放在mainwindow.ui属性配置中，而mainwindow.h的预处理命令放在CMake Rules/moc_mainwindow.cpp.rule的属性配置中。源文件修改后，目标文件会自动生成。

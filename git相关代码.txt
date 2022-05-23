@@ -1,0 +1,35 @@
+ls 列出当前分支下的文件
+mkdir runoob-git-test在当前目录下创建一个新文件
+echo "www.google.com" > test2.txt从无到有创建一个有内容的txt文件
+cat README.md查看README.md文件
+touch runoob-test.txt 添加文件
+git remote 查看当前配置有哪些远程仓库（git remote -v可以看到每个别名的实际链接地址）
+git log --oneline 查看历史记录的简洁版本
+git status 查看当前的状态
+
+
+创建仓库和基本操作
+git init初始化一个本地仓库，创建一个.git文件，默认创建一个master分支
+git remote add origin git@github.com:qq959553568/project.git
+建立本地与github仓库之间的连接
+cd d:/gitdatabase
+进入需要上传代码的文件夹
+git add ./上传该文件下面所有的文件
+git add ./test.txt 上传单个文件指定路径
+git commit -m"first commit"提交文件，m后面的是提示信息
+git pull origin master下载代码到本地仓库
+git push origin master本地仓库推送到服务器
+git remote rm origin删除已关联的库
+
+分支管理
+git branch 列出本地的分支
+git branch firstbranch手动创建一个分支,firstbranch是创建的分支名（连续的字符
+）
+git checkout firstbranch切换到firstbranch分支
+git checkout -b newtest 创建新分支并立即切换到该分支
+git fetch从远程仓库下载新分支与数据
+git merge 从远端仓库提取数据并尝试合并到当前分支
+
+删除远程仓库
+git remote rm origin2删除远程仓库的别名（origin2）
+
